@@ -7,7 +7,7 @@ Stato: ⬜ da fare · 🟨 in corso · ✅ fatto
 | # | Funzionalità | Spec | Stato | Nota |
 |---|---|---|---|---|
 | 01 | Base: scaffolding, Vitest, impostazioni, materie, backup | [01-base](spec/01-base.md) | ✅ | Backup senza cache eventi; import rispetta le lapidi |
-| 02 | Prova del login Google su telefono | [02-prova-login](spec/02-prova-login.md) | ⬜ | |
+| 02 | Prova del login Google su telefono | [02-prova-login](spec/02-prova-login.md) | ✅ | PWA Android: popup GIS ok, rinnovo senza perdere stato, events.list ok, VPN spenta segnalata |
 | 03 | Client Calendar, cache, parse, finto Calendar | [03-calendar](spec/03-calendar.md) | ⬜ | |
 | 04 | Scheda Oggi, Fatto/Salta/Annulla, coda offline | [04-oggi](spec/04-oggi.md) | ⬜ | |
 | 05 | Sposta: findSlot, Non fatto, Parziale, Imprevisto | [05-sposta](spec/05-sposta.md) | ⬜ | |
