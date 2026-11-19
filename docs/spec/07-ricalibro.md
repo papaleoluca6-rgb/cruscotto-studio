@@ -4,7 +4,7 @@
 **Leggere**: `formato-calendar.md`, `lib/planner/weights.ts` (riga 06), `lib/planner/findSlot.ts` (riga 05), `lib/calendar/api.ts`, `lib/calendar/queue.ts` (riga 04), schema (`recalibrations`).
 
 ## Uscita: lista di operazioni
-- Si avvia dal pulsante "Ricalibra" nella scheda Materie. Opera solo su tipi study/review/exercises: vocab (cinese) e pronto non si toccano mai.
+- Si avvia dal pulsante "Ricalibra" nella scheda Materie. Opera su tutte le sessioni create dall'app, compresi vocab (cinese) e pronto (CPT Pronto); la regola 3 (quote) conta solo le materie che entrano nelle quote (riga 06).
 - Scritture (insert/patch/delete) tramite la coda `lib/calendar/queue.ts` con If-Match; 412 → di nuovo anteprima.
 - Operazioni `move`, `update`, `create`, `delete` sugli eventi di studio dei prossimi 7-10 giorni.
 - Anteprima (prima → dopo) e applicazione solo dopo conferma, una operazione alla volta, con un riepilogo.

@@ -10,7 +10,7 @@
 - quota = punteggio / somma.
 - Ore consigliate (7 giorni) = ore di studio pianificate × quota.
 - Ore di studio pianificate = ore degli eventi di studio (study, review, exercises) dei prossimi 7 giorni.
-- Il cinese (vocaboli) è fisso: le sue sessioni non si spostano né si contano nelle quote. Importanza 0 esclude la materia.
+- Il cinese (vocaboli) è fisso: non si conta nelle quote (le sue sessioni si possono comunque spostare e ricalibrare). Importanza 0 esclude la materia.
 - **Test prima del codice**: urgenza ai limiti (0,5 e 3), senza data (0,8), arretrato, importanza 0, cinese escluso, somma delle quote = 1.
 
 ## Scheda Materie (`features/subjects/`)
