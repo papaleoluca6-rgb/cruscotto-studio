@@ -14,7 +14,7 @@
 ## Azioni su ogni sessione
 Ogni scrittura su Calendar con anteprima del nuovo titolo e conferma.
 - **Fatto** → chiede i minuti reali (precompilati con i pianificati), prefisso ✅ + log.
-- Su una sessione Review, pulsante **Ripasso argomento** (riga 08, via shell `app/`).
+- Su una sessione Review, pulsante **Ripasso argomento** (riga 08, via shell `app/`); nascosto finché la riga 08 non c'è.
 - **Salta** → prefisso ✗ + log.
 - **Annulla segno** → toglie il prefisso e il log; passa anch'esso dalla coda con If-Match, come le altre azioni.
 - **Flashcard** → apre il generatore con l'argomento della sessione. Si aggiunge nella riga 08 (non qui).

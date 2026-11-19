@@ -21,5 +21,5 @@
 - Classifiche sociali; autovalutazione mescolata in silenzio nella prontezza.
 
 ## Fatto quando
-- Il timer riempie i minuti reali, il riepilogo mostra i dati del finto Calendar e del log.
+- Il timer riempie i minuti reali, il riepilogo mostra i dati del finto Calendar e del log; prove su telefono, tablet e PC ripetute (come riga 10).
 - Build, lint, test; revisione con sub-agente; ROADMAP aggiornata.

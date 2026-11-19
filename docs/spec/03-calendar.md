@@ -1,20 +1,21 @@
 # 03 Client Calendar, cache, parse, finto Calendar
 
 **Obiettivo**: leggere e scrivere eventi su Google Calendar, con cache locale e riconoscimento delle sessioni di studio.
-**Leggere**: `formato-calendar.md`, `lib/calendar/auth.ts` (riga 02), `lib/http.ts`.
+**Leggere**: `formato-calendar.md`, `03-calendar-fake.md`, `lib/calendar/auth.ts` (riga 02), `lib/http.ts`.
 **Crea anche**: `lib/time.ts` (date nel fuso dell'utente, usato dalle chiamate Calendar).
 **Login**: riga 02, già fatta. Qui i pulsanti di prova della riga 02 nelle Impostazioni si sostituiscono con login/logout e "Aggiorna ora".
 
 ## Lettura (`api.ts`)
-- `events.list` con `singleEvents=true`, `orderBy=startTime`, finestra da -7 a +15 giorni, paginazione.
+- Due modi per `events.list` (con `singleEvents=true`, paginazione): **lettura iniziale completa** senza `timeMin`/`timeMax`/`orderBy`/`privateExtendedProperty`, che salva `nextSyncToken`; **letture successive** con il solo `syncToken` (+ `singleEvents`). Finestra e ordine si applicano in locale. Su 410 si scarta il token e si rilegge tutto.
+- Cache: si tolgono gli eventi finiti da più di 7 giorni, si tengono tutti i futuri (servono al verdetto di capacità, riga 06). Se la lettura iniziale è troppo pesante (lezioni ricorrenti), ripiego: lettura a finestra (-7/+15 giorni, `orderBy=startTime`) senza token.
 - In cache tutti gli eventi del calendario di lavoro, anche non di studio (tipo vuoto), con `transparency` e se è tutto il giorno; "ignorati" = non sono sessioni. Si legge solo il calendario di lavoro; i calendari esclusi non si leggono né scrivono.
 - Le risposte vanno in cache in `events`: l'app si apre anche offline e mostra quando è stata aggiornata l'ultima volta.
 - Ogni evento in cache conserva l'`etag` e lo espone: serve alla coda offline (riga 04).
-- **Aggiornamento incrementale**: la prima lettura completa salva `nextSyncToken`; poi `events.list` con `syncToken` applica solo le modifiche (cancellati = tolti dalla cache). Su 410 si scarta il token e si rilegge tutto. Il `syncToken` non si combina con `timeMin`/`orderBy`/`privateExtendedProperty`: finestra e ordine si applicano alla cache.
+- Le modifiche incrementali aggiornano la cache (cancellati = tolti).
 
 ## Scrittura (`api.ts`)
 - Ogni evento creato o spostato porta `extendedProperties.private` (`cruscotto=1`, `tipo`, `materia`) e i promemoria popup (`reminders.overrides`, minuti dalle impostazioni, default 10); vedi `formato-calendar.md`. Mai `colorId` per lo stato.
-- `list` accetta `privateExtendedProperty=cruscotto=1` per i soli eventi dell'app (es. prima di un `delete`).
+- `privateExtendedProperty=cruscotto=1` è solo una comodità: il riconoscimento passa sempre da `parse.ts` (tag o titolo); un `delete` non si fonda mai sul solo filtro.
 - `events.patch` (titolo, orari), `events.insert` (resto, imprevisto), `events.delete` (solo dal ricalibro, solo eventi di studio).
 - Sempre con `timeZone` e `sendUpdates=none`.
 - Interfaccia del client: `list`, `get`, `patch`, `insert`, `delete`; `patch` e `delete` accettano `ifMatch` (etag, header `If-Match`). Le scritture le chiama solo chi ha già mostrato anteprima e conferma.
@@ -31,10 +32,8 @@
 - "Da segnare" = senza prefisso o con ↻, con fine nel passato. Un solo prefisso per titolo: il nuovo sostituisce il vecchio.
 - **Test prima del codice** (Vitest): un caso per ogni formato di titolo, per ogni prefisso, `Simulazione`, evento con tag e titolo non riconoscibile, titoli non di studio (lezioni, pasti: tipo vuoto, non sessioni), prefisso ↻ da segnare, un solo prefisso, descrizione con e senza `Notion:`.
 
-## Finto Calendar (`fake.ts`)
-- Stessa interfaccia del client (`list`, `get`, `patch`, `insert`, `delete`), con `extendedProperties`, `reminders` e `syncToken` (410 su token scaduto), eventi di esempio inventati (nessun dato reale, repo pubblico) in memoria (con `etag`), attivabile in sviluppo.
-- Il finto risponde 412 se `ifMatch` non coincide con l'etag e restituisce il nuovo etag dopo ogni scrittura (serve ai test della riga 04).
-- In sviluppo si usa questo, non il Calendar vero.
+## Finto Calendar
+Vedi `03-calendar-fake.md` (stessa interfaccia, 412, `syncToken`, tag): si usa in sviluppo.
 
 ## Fatto quando
 - Con il finto e con il vero Calendar gli eventi arrivano in `events` con `etag` e tag; ultimo aggiornamento visibile.

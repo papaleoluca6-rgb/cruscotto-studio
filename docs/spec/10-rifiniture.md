@@ -7,6 +7,7 @@
 - L'API di Notion non accetta chiamate dirette dal browser senza backend: niente integrazione diretta (regola "niente backend").
 - Pulsante **"Copia riepilogo per Notion"**: Markdown con stato per materia, piano dei prossimi 10 giorni, ultimo ricalibro.
 - Da incollare a mano o da passare a Claude.
+- La riga 11 estende la copia con il riepilogo settimanale.
 - Se la copia negli appunti fallisce, mostrarlo e offrire il testo da selezionare.
 - Test della funzione che costruisce il Markdown (pura).
 
