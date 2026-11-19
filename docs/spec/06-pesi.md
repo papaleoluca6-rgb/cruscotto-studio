@@ -9,7 +9,8 @@
 - arretrato = sessioni da segnare negli ultimi 7 giorni + non fatte negli ultimi 14.
 - quota = punteggio / somma.
 - Ore consigliate (7 giorni) = ore di studio pianificate × quota.
-- Il cinese (vocaboli) è fisso e non entra nelle quote. Importanza 0 esclude la materia.
+- Ore di studio pianificate = ore degli eventi di studio (study, review, exercises) dei prossimi 7 giorni.
+- Il cinese (vocaboli) è fisso: le sue sessioni non si spostano né si contano nelle quote. Importanza 0 esclude la materia.
 - **Test prima del codice**: urgenza ai limiti (0,5 e 3), senza data (0,8), arretrato, importanza 0, cinese escluso, somma delle quote = 1.
 
 ## Scheda Materie (`features/subjects/`)

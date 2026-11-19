@@ -5,7 +5,7 @@
 ## Riuso da lecturenote
 Cartella `C:/Users/Utente/Desktop/registratore lecture note/` (sola lettura). Percorsi relativi. Rinominare "lecturenote/LectureNote" in "cruscotto-studio".
 - `vite.config.ts`: togliere `globPatterns` di pdf.js e `globIgnores: ['offline/**']`; nome, descrizione e `lang` nel manifest. Tenere `registerType: 'prompt'` e `server.host '127.0.0.1'`.
-- `.github/workflows/pages.yml`: invariato.
+- `.github/workflows/pages.yml`: invariato. Ricava `BASE_PATH` dal nome del repository: il repository deve chiamarsi `cruscotto-studio` (`BASE_PATH=/cruscotto-studio/`).
 - `.oxlintrc.json`: togliere `public/offline/**`.
 - `.claude/launch.json`: nome.
 - `tsconfig.json`, `tsconfig.app.json`, `tsconfig.node.json`: invariati.
@@ -17,7 +17,7 @@ Cartella `C:/Users/Utente/Desktop/registratore lecture note/` (sola lettura). Pe
 - `src/app/UpdateBanner.tsx`: togliere `allSaved`.
 - `src/features/settings/{ApiKeyField,ChoiceGroup}.tsx`.
 - `src/features/backup/{backup,format,selfCheck}.ts` + `BackupPanel.tsx`, senza `legacy.ts`. Backup = JSON semplice, nessun Blob; le chiavi API restano fuori.
-- `package.json`: togliere `pdfjs-dist`, `perfect-freehand`, `postinstall`; aggiungere `vitest` e lo script `test`.
+- `package.json`: togliere `pdfjs-dist`, `perfect-freehand`, `postinstall`; tenere `dexie`, `dexie-react-hooks`, `vite-plugin-pwa`; aggiungere `vitest` e lo script `test`.
 
 ## Resto
 - Repository locale già esistente; creare il remoto pubblico `cruscotto-studio` e fare il primo push.

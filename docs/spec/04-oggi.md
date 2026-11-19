@@ -15,7 +15,7 @@
 Ogni scrittura su Calendar con anteprima del nuovo titolo e conferma.
 - **Fatto** → prefisso ✅ + log.
 - **Salta** → prefisso ✗ + log.
-- **Annulla segno** → toglie il prefisso e il log.
+- **Annulla segno** → toglie il prefisso e il log; passa anch'esso dalla coda con If-Match, come le altre azioni.
 - **Flashcard** → apre il generatore con l'argomento della sessione. Si aggiunge nella riga 08 (non qui).
 - Non fatto, Parziale e Imprevisto: riga 05.
 - Ogni salvataggio o scrittura fallita si mostra all'utente.

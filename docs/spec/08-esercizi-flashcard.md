@@ -13,7 +13,7 @@
 - Mazzi per materia con il conteggio delle carte scadute.
 - Ripasso Leitner con quattro tasti:
   - Di nuovo → torna in coda, scatola 1;
-  - Difficile → stessa scatola, +1 giorno;
+  - Difficile → stessa scatola, scadenza +1 giorno dalla data del ripasso;
   - Bene → scatola +1;
   - Facile → scatola +2.
 - Intervalli per scatola: 1/2/4/8/16 giorni.
