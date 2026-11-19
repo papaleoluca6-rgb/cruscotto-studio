@@ -13,6 +13,8 @@ Stato: ⬜ da fare · 🟨 in corso · ✅ fatto
 | 05 | Sposta: findSlot, Non fatto, Parziale, Imprevisto | [05-sposta](spec/05-sposta.md) | ⬜ | |
 | 06 | Materie e pesi | [06-pesi](spec/06-pesi.md) | ⬜ | |
 | 07 | Ricalibro deterministico | [07-ricalibro](spec/07-ricalibro.md) | ⬜ | |
-| 08 | Esercizi e flashcard | [08-esercizi-flashcard](spec/08-esercizi-flashcard.md) | ⬜ | |
+| 08 | Esercizi e flashcard (FSRS) | [08-esercizi-flashcard](spec/08-esercizi-flashcard.md) | ⬜ | |
 | 09 | Provider AI, ricalibro e flashcard con AI | [09-ai](spec/09-ai.md) | ⬜ | |
 | 10 | Rifiniture: riepilogo Notion, test su telefono, tablet, PC | [10-rifiniture](spec/10-rifiniture.md) | ⬜ | |
+| 11 | Timer e riepilogo settimanale | [11-timer-settimana](spec/11-timer-settimana.md) | ⬜ | |
+| 12 | Sincronizzazione tra dispositivi (Drive) | [12-sync-drive](spec/12-sync-drive.md) | ⬜ | |

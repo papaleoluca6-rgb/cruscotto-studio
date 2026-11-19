@@ -1,7 +1,7 @@
 # 08 Esercizi e flashcard
 
-**Obiettivo**: tenere gli esercizi d'esame e ripassare le flashcard con Leitner, senza AI.
-**Leggere**: `src/db/schema.ts` (`exercises`, `cards`, `subjects`).
+**Obiettivo**: tenere gli esercizi d'esame e ripassare le flashcard con FSRS, senza AI.
+**Leggere**: `src/db/schema.ts` (`exercises`, `cards`, `revlog`, `subjects`).
 
 ## Esercizi (`features/exercises/`)
 - Elenco per materia con tre stati: Da fare / Con soluzione / Da solo (nel modello: todo / sol / solo).
@@ -11,14 +11,11 @@
 
 ## Flashcard (`features/flashcards/`)
 - Mazzi per materia con il conteggio delle carte scadute.
-- Ripasso Leitner con quattro tasti:
-  - Di nuovo → torna in coda, scatola 1;
-  - Difficile → stessa scatola, scadenza +1 giorno dalla data del ripasso;
-  - Bene → scatola +1;
-  - Facile → scatola +2.
-- Intervalli per scatola: 1/2/4/8/16 giorni.
-- Aggiunta manuale sempre disponibile.
-- **Test prima del codice** per `lib/planner/leitner.ts` (pura): ogni tasto da ogni scatola, limite scatola 5, scadenza.
+- Ripasso FSRS con `ts-fsrs` fissata a una 5.4.x (MIT, offline; non la 6.0.0). Wrapper puro `lib/planner/fsrs.ts`: nuova carta, `next(carta, ora, voto)`, ritenzione desiderata dalle impostazioni (default 0,9).
+- Quattro tasti = voti: Di nuovo 1, Difficile 2, Bene 3, Facile 4. Ogni ripasso aggiorna i campi FSRS della carta e scrive una riga in `revlog` (voto, stato prima/dopo, minuti) nella stessa transazione.
+- Aggiunta manuale sempre disponibile. Carte solo locali: mai un evento Calendar per carta.
+- **Test prima del codice** per `fsrs.ts`: ogni voto da carta nuova e da carta in revisione, scadenza futura, ritenzione che cambia l'intervallo, riga `revlog`.
+- **Ripasso argomento**: da una sessione Review (pulsante nella riga 04, o da qui) apre le carte scadute di quell'`argomento` più gli esercizi della materia con `argomento` uguale non ancora "da solo" (campo `argomento` anche negli esercizi).
 
 ## Pulsante Flashcard della scheda Oggi
 - Si aggiunge qui: sulla sessione apre la scheda Flashcard tramite la shell `app/` (scheda + parametro argomento), senza importare `features/flashcards` da `features/today`; apre il generatore/aggiunta con l'argomento della sessione (campo `argomento` della carta).

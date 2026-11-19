@@ -14,9 +14,11 @@
 ## Regole (`lib/planner/`, pure)
 1. Rimettere in ordine logico Study → Exercises → Review della stessa materia. Exercises e Review si collegano allo Study precedente più vicino della stessa materia (Review: stesso argomento; Exercises: stessa materia).
 2. Spostare i ripassi che cadono prima del loro studio.
-3. Riportare ogni materia entro ±20% delle ore consigliate (da `weights.ts`), scambiando o accorciando sessioni.
+3. Riportare ogni materia entro ±20% delle ore consigliate (da `weights.ts`), scambiando o accorciando sessioni; durate attese col fattore di `stime.ts` (riga 06).
+   - Blocco minimo 30 min (impostazione, predefinito da tarare): mai sessioni più corte.
+   - Se il piano non ci sta (verdetto di `capacita.ts`), l'anteprima propone di togliere o accorciare per prime le sessioni delle materie con punteggio più basso, ognuna con il suo `motivo`; mai in silenzio, mai senza conferma.
 4. Eventi non di studio: solo occupati, mai toccati; mai calendari esclusi.
-- **Test prima del codice** per le regole 1-4, ciascuna con un caso positivo e uno che non deve cambiare nulla.
+- **Test prima del codice** per le regole 1-4, ciascuna con un caso positivo e uno che non deve cambiare nulla; più blocco minimo e piano che non ci sta (taglia prima il punteggio più basso).
 
 ## Salvataggio
 - Ogni ricalibro va salvato in `recalibrations`: data, metodo (deterministico), proposta (lista di operazioni), applicata sì/no, riepilogo.
