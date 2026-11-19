@@ -3,6 +3,7 @@ import { useSetting } from '../../db/settings'
 import { isValidTimeZone } from '../../lib/time'
 import { AiSettings } from './AiSettings'
 import { ListSetting, NumberSetting, TextSetting } from './fields'
+import { GoogleTest } from './GoogleTest'
 import { SubjectsEditor } from './SubjectsEditor'
 import './settings.css'
 
@@ -31,6 +32,7 @@ export function SettingsScreen({ children }: { children?: ReactNode }) {
         </div>
         <ListSetting k="calendar.excluded" label="Calendari esclusi" placeholder="Un id di calendario per riga"
           help="Mai letti né modificati dall'app." />
+        <GoogleTest />
       </section>
 
       <section className="ui-sec">
