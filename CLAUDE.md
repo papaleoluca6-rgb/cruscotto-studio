@@ -40,7 +40,7 @@ docs/ROADMAP.md, docs/spec/
 - Errori di rete/provider con messaggio specifico: VPN spenta, token scaduto, chiave non valida, quota, CORS.
 
 ## Errori da evitare
-- Ogni salvataggio o scrittura fallita si mostra all'utente.
+- Ogni salvataggio o scrittura fallita si mostra, mai in silenzio.
 - Operazioni a più passi (import, ricalibro): o tutto o riepilogo esatto di cosa è riuscito; mai dati a metà.
 - Timeout su ogni richiesta, lettura della risposta compresa (`lib/http.ts`).
 - `navigator.storage.persist()` all'avvio.

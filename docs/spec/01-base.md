@@ -19,7 +19,7 @@ Cartella `C:/Users/Utente/Desktop/registratore lecture note/` (sola lettura). Ri
 - Schermata impostazioni: i valori di `settings` sotto, più materie (nome, prefisso, colore) e backup export/import.
 
 ## Modello dati (base di `db/schema.ts`; poi lo schema è la fonte)
-Ogni riga ha `id` UUID e `updatedAt` (sincronizzazione, riga 12); eccezioni: `events` (cache, id Google) e `settings` (chiave, ma con `updatedAt`). Import e backup conservano gli id. Ogni cancellazione scrive una riga in `tombstones`.
+Ogni riga ha `id` UUID e `updatedAt` (sincronizzazione, riga 12); tranne `events` (id Google) e `settings` (chiave, con `updatedAt`). Backup conserva gli id. Ogni cancellazione nelle tabelle sincronizzate va in `tombstones`.
 - `settings`: righe chiave→valore come `db/settings.ts` di lecturenote; chiavi AI come `apiKey.<provider>` (così il backup le esclude). Valori: fuso orario, Client ID Google, calendario di lavoro (default `primary`), calendari esclusi, finestra di studio (default 08:00-22:45), margine tra eventi (default 5 min), blocco minimo (30 min), soglia sessioni per il fattore (5), provider AI scelto, modello per provider, minuti promemoria popup (default 10), ritenzione desiderata FSRS (default 0,9).
 - `subjects`: id, nome, prefisso titolo, colorId, difficoltà 0-5, importanza 0-5, data esame, profAt, meAt.
 - `events` (cache di Calendar): id Google, titolo, titolo pulito, stato, subjectId, tipo (study/review/exercises/simulazione/pronto/vocab, vuoto se non di studio), tag app (`cruscotto=1`), start, end, `transparency` (opaque/transparent), tutto il giorno, descrizione, calendarId, aggiornato.

@@ -23,7 +23,7 @@
 - Collegare anche i dati del riepilogo della riga 04 (flashcard scadute, esercizi mancanti).
 
 ## Dati iniziali
-- Un solo JSON (dal cruscotto attuale, vedi `01-base.md`, "Dati iniziali") con esercizi, carte e materie. Le vecchie carte (scatola Leitner, scadenza) diventano carte FSRS nuove con `due` = vecchia scadenza; gli altri campi vecchi si ignorano. Campi: campi difficoltà, importanza, data esame, profAt, meAt. Stesso meccanismo dell'import esercizi.
+- Un solo JSON (dal cruscotto attuale, vedi `01-base.md`, "Dati iniziali") con esercizi, carte e materie. Le vecchie carte (scatola Leitner, scadenza) diventano carte FSRS nuove con `due` = vecchia scadenza e `argomento` se c'è; gli altri campi vecchi si ignorano; id nuovi (UUID). Materie: difficoltà, importanza, data esame, profAt, meAt. Stesso meccanismo dell'import esercizi.
 - Il JSON con dati reali resta fuori dal repository: aggiungere `dati/` a `.gitignore`.
 
 ## Fatto quando

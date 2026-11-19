@@ -11,7 +11,7 @@
 - In cache tutti gli eventi del calendario di lavoro, anche non di studio (tipo vuoto), con `transparency` e se è tutto il giorno; "ignorati" = non sono sessioni. Si legge solo il calendario di lavoro; i calendari esclusi non si leggono né scrivono.
 - Le risposte vanno in cache in `events`: l'app si apre anche offline e mostra quando è stata aggiornata l'ultima volta.
 - Ogni evento in cache conserva l'`etag` e lo espone: serve alla coda offline (riga 04).
-- Le modifiche incrementali aggiornano la cache (cancellati = tolti).
+- Le modifiche incrementali aggiornano la cache; con `syncToken` i cancellati arrivano sempre (`status: cancelled`) e si tolgono.
 
 ## Scrittura (`api.ts`)
 - Ogni evento creato o spostato porta `extendedProperties.private` (`cruscotto=1`, `tipo`, `materia`) e i promemoria popup (`reminders.overrides`, minuti dalle impostazioni, default 10); vedi `formato-calendar.md`. Mai `colorId` per lo stato.
