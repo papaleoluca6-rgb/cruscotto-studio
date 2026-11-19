@@ -18,7 +18,7 @@
   - Facile → scatola +2.
 - Intervalli per scatola: 1/2/4/8/16 giorni.
 - Aggiunta manuale sempre disponibile.
-- **Test prima del codice** per la logica Leitner (pura): ogni tasto da ogni scatola, limite scatola 5, scadenza.
+- **Test prima del codice** per `lib/planner/leitner.ts` (pura): ogni tasto da ogni scatola, limite scatola 5, scadenza.
 
 ## Pulsante Flashcard della scheda Oggi
 - Si aggiunge qui: sulla sessione apre il generatore/aggiunta con l'argomento della sessione (campo `argomento` della carta).

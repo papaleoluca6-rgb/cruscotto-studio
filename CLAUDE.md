@@ -21,14 +21,15 @@ src/
   lib/            time.ts (fuso), http.ts, Icon.tsx
   lib/calendar/   auth.ts, api.ts, parse.ts, fake.ts (finto Calendar)
   lib/ai/         types.ts, gemini.ts, openaiCompatible.ts, index.ts
+  lib/planner/    findSlot.ts, weights.ts, regole di ricalibro, tipo operazione, leitner.ts (pure)
   styles/         global.css (token di design)
-  features/       today, planner, recalibrate, subjects, exercises, flashcards, settings, backup
+  features/       today, recalibrate, subjects, exercises, flashcards, settings, backup
 docs/ROADMAP.md, docs/spec/
 ```
 
 ## Regole
 - **Tutto gratuito**: niente servizi a pagamento o a consumo imposti dall'app.
-- **Senza chiavi AI l'app funziona del tutto**: versione deterministica in `features/planner/` (pura, testata); l'AI è facoltativa, mai default.
+- **Senza chiavi AI l'app funziona del tutto**: versione deterministica in `lib/planner/` (pura, testata, condivisa); l'AI è facoltativa, mai default.
 - Chiavi e token solo in `db.settings`; il token Google resta in memoria (rinnovo GIS).
 - **Scritture su Calendar sempre con anteprima e conferma**, solo su eventi di studio (dal titolo). Mai lezioni, altri calendari o esclusi.
 - Orari nel fuso utente (default `Asia/Shanghai`); le chiamate a Calendar passano `timeZone`.
@@ -48,7 +49,7 @@ docs/ROADMAP.md, docs/spec/
 
 ## Come lavoriamo
 - A inizio sessione leggere solo `CLAUDE.md` + `docs/spec/<riga>.md` + `src/db/schema.ts` (+ `formato-calendar.md` se richiamato).
-- Test prima del codice per `planner/` e `lib/calendar/parse.ts`. In sviluppo usare il finto Calendar.
+- Test prima del codice per `lib/planner/` e `lib/calendar/parse.ts`. In sviluppo usare il finto Calendar.
 - A fine funzionalità un sub-agente rivede le modifiche contro regole ed errori da evitare; poi aggiornare lo stato in `docs/ROADMAP.md` (una riga), note nel messaggio di commit.
 - Sub-agenti per ricerche e verifiche; stessi file = un solo agente. `/compact` se la conversazione si allunga.
 - Effort alto solo per le righe 02, 03, 05, 07.

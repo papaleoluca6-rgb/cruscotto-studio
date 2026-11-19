@@ -3,7 +3,7 @@
 **Obiettivo**: dire quanto studiare ogni materia nei prossimi 7 giorni e se si è in linea.
 **Leggere**: `src/db/schema.ts` (`subjects`, `log`, `events`).
 
-## `planner/weights.ts` (funzione pura)
+## `lib/planner/weights.ts` (funzione pura)
 - punteggio = difficoltà × importanza × urgenza × (1 + 0,1 × arretrato).
 - urgenza = 21 / giorni all'esame, limitata fra 0,5 e 3; 0,8 senza data.
 - arretrato = sessioni da segnare negli ultimi 7 giorni + non fatte negli ultimi 14.

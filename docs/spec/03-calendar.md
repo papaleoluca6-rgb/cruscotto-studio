@@ -12,11 +12,12 @@
 ## Scrittura (`api.ts`)
 - `events.patch` (titolo, orari), `events.insert` (resto, imprevisto), `events.delete` (solo dal ricalibro, solo eventi di studio).
 - Sempre con `timeZone` e `sendUpdates=none`.
-- Interfaccia del client: `list`, `patch`, `insert`, `delete`. Le scritture le chiama solo chi ha già mostrato anteprima e conferma.
+- Interfaccia del client: `list`, `patch`, `insert`, `delete`; `patch` e `delete` accettano `ifMatch` (etag, header `If-Match`). Le scritture le chiama solo chi ha già mostrato anteprima e conferma.
 
 ## Errori (messaggi specifici, mai in silenzio)
 - 401 → rifare login (token scaduto).
 - 403 → permessi o quota.
+- 412 → etag non coincide: errore tipizzato nel client (lo gestisce la coda, riga 04).
 - Rete → "VPN spenta?".
 - Timeout su ogni richiesta, lettura della risposta compresa (`lib/http.ts`).
 
@@ -27,6 +28,7 @@
 
 ## Finto Calendar (`fake.ts`)
 - Stessa interfaccia del client (`list`, `patch`, `insert`, `delete`), eventi di esempio in memoria (con `etag`), attivabile in sviluppo.
+- Il finto risponde 412 se `ifMatch` non coincide con l'etag e restituisce il nuovo etag dopo ogni scrittura (serve ai test della riga 04).
 - In sviluppo si usa questo, non il Calendar vero.
 
 ## Fatto quando
