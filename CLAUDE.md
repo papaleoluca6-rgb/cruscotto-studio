@@ -19,7 +19,7 @@ src/
   app/            shell e schede
   db/schema.ts    UNICO modello dati (cambi = db.version(n))
   lib/            time.ts (fuso), http.ts, Icon.tsx
-  lib/calendar/   auth.ts, api.ts, parse.ts, fake.ts (finto Calendar)
+  lib/calendar/   auth.ts, api.ts, queue.ts, parse.ts, fake.ts (finto Calendar)
   lib/ai/         types.ts, gemini.ts, openaiCompatible.ts, index.ts
   lib/planner/    findSlot.ts, weights.ts, regole di ricalibro, tipo operazione, leitner.ts (pure)
   styles/         global.css (token di design)
@@ -48,7 +48,7 @@ docs/ROADMAP.md, docs/spec/
 - Repo pubblico: niente dati, chiavi o Client ID nei commit.
 
 ## Come lavoriamo
-- A inizio sessione leggere solo `CLAUDE.md` + il file della colonna Spec in ROADMAP + `src/db/schema.ts` (se esiste; prima il modello è in 01-base.md) (+ `formato-calendar.md`). Una sessione per riga della roadmap.
+- A inizio sessione leggere solo `CLAUDE.md` + il file della colonna Spec in ROADMAP + `src/db/schema.ts` (o il modello in 01-base.md) (+ `formato-calendar.md` se citato). Una sessione per riga della roadmap.
 - Test prima del codice per `lib/planner/` e `lib/calendar/parse.ts`. In sviluppo usare il finto Calendar.
 - A fine funzionalità un sub-agente rivede le modifiche contro regole ed errori da evitare; poi stato in `docs/ROADMAP.md` (una riga), note nel commit.
 - Sub-agenti per ricerche e verifiche; stessi file = un solo agente. `/compact` se si allunga.

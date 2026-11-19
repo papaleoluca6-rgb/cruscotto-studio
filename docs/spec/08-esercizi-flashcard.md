@@ -21,12 +21,13 @@
 - **Test prima del codice** per `lib/planner/leitner.ts` (pura): ogni tasto da ogni scatola, limite scatola 5, scadenza.
 
 ## Pulsante Flashcard della scheda Oggi
-- Si aggiunge qui: sulla sessione apre il generatore/aggiunta con l'argomento della sessione (campo `argomento` della carta).
+- Si aggiunge qui: sulla sessione apre la scheda Flashcard tramite la shell `app/` (scheda + parametro argomento), senza importare `features/flashcards` da `features/today`; apre il generatore/aggiunta con l'argomento della sessione (campo `argomento` della carta).
 - Senza AI apre l'aggiunta manuale precompilata con l'argomento. "Genera" arriva nella riga 09.
 - Collegare anche i dati del riepilogo della riga 04 (flashcard scadute, esercizi mancanti).
 
 ## Dati iniziali
-- Import da JSON di esercizi e carte (esportati dal cruscotto attuale, vedi `01-base.md`, "Dati iniziali"): stesso meccanismo dell'import esercizi.
+- Un solo JSON (dal cruscotto attuale, vedi `01-base.md`, "Dati iniziali") con esercizi, carte e materie: campi difficoltà, importanza, data esame, profAt, meAt. Stesso meccanismo dell'import esercizi.
+- Il JSON con dati reali resta fuori dal repository: aggiungere `dati/` a `.gitignore`.
 
 ## Fatto quando
 - Si aggiungono e ripassano le carte, gli stati degli esercizi cambiano, l'import JSON funziona; il pulsante Flashcard è nella scheda Oggi.

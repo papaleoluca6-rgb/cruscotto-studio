@@ -8,7 +8,7 @@
 - Flashcard scadute ed esercizi mancanti si leggono da `db/` (le schede arrivano nella riga 08; prima, zero).
 
 ## Liste
-- Da segnare (ultimi 7 giorni), Oggi, Domani, Prossimi giorni (comprimibile).
+- Da segnare (ultimi 7 giorni; senza prefisso o con ↻, fine nel passato), Oggi, Domani, Prossimi giorni (comprimibile).
 - Tocco sul titolo = mostra la descrizione.
 
 ## Azioni su ogni sessione
@@ -20,7 +20,8 @@ Ogni scrittura su Calendar con anteprima del nuovo titolo e conferma.
 - Non fatto, Parziale e Imprevisto: riga 05.
 - Ogni salvataggio o scrittura fallita si mostra all'utente.
 
-## Coda offline
+## Coda offline (`lib/calendar/queue.ts`)
+- La coda vive in `lib/calendar/queue.ts`; la usano anche le righe 05 e 07.
 - Le azioni fatte offline restano in coda (in `db/`) e si inviano alla riconnessione.
 - Ogni invio usa `If-Match: <etag>` con l'`etag` dell'evento in cache.
 - Se Google risponde 412 (l'evento è cambiato) l'operazione non parte: torna in anteprima, rilegge l'evento e l'utente riconferma.

@@ -25,13 +25,13 @@ Cartella `C:/Users/Utente/Desktop/registratore lecture note/` (sola lettura). Pe
 - Impostazioni: fuso orario, Client ID Google, finestra di studio, margine, calendario di lavoro, calendari esclusi, materie (nome, prefisso, colore); backup export/import.
 
 ## Modello dati (base di `db/schema.ts`; poi lo schema è la fonte)
-- `settings` (una riga): fuso orario, Client ID Google, calendario di lavoro (default `primary`), calendari esclusi, finestra di studio (default 08:00-22:45), margine tra eventi (default 5 min), provider AI scelto, chiavi per provider, modello per provider.
+- `settings`: righe chiave→valore come `db/settings.ts` di lecturenote; chiavi AI come `apiKey.<provider>` (così il backup le esclude). Valori: fuso orario, Client ID Google, calendario di lavoro (default `primary`), calendari esclusi, finestra di studio (default 08:00-22:45), margine tra eventi (default 5 min), provider AI scelto, modello per provider.
 - `subjects`: id, nome, prefisso titolo, colorId, difficoltà 0-5, importanza 0-5, data esame, profAt, meAt.
-- `events` (cache di Calendar): id Google, titolo, titolo pulito, stato, subjectId, tipo (study/review/exercises/pronto/vocab), start, end, descrizione, calendarId, aggiornato.
+- `events` (cache di Calendar): id Google, titolo, titolo pulito, stato, subjectId, tipo (study/review/exercises/pronto/vocab, vuoto se non di studio), start, end, `transparency` (opaque/transparent), tutto il giorno, descrizione, calendarId, aggiornato.
 - `log`: eventId, stato, percentuale, nota ("dove sono arrivato"), inizio pianificato, minuti pianificati, spostato a, motivo, data.
 - `exercises`: id, subjectId, nome, fonte, stato (todo / sol / solo), ordine, nota.
 - `cards`: id, subjectId, domanda, risposta, scatola 1-5, scadenza, argomento, creata, ultimo ripasso.
 - `recalibrations`: data, metodo (deterministico/AI + provider), proposta (lista di operazioni), applicata sì/no, riepilogo.
 
 ## Dati iniziali (da importare dopo la riga 08)
-Materie: Analog, Communication, Analisi 2, ALP, CPT, DSP, Cinese. Pesi, date d'esame ed esercizi si esportano dal cruscotto attuale: chiedere a Claude nella chat del progetto "Calendario": "esporta in JSON settings, exercises e cards dal Cruscotto studio".
+Materie: Analog, Communication, Analisi 2, ALP, CPT, DSP, Cinese. Pesi (difficoltà, importanza, profAt, meAt), date d'esame, esercizi e carte si importano nella riga 08 da un solo JSON, esportato dal cruscotto attuale: il JSON con dati reali non va nel repository (`dati/` in `.gitignore`); chiedere a Claude nella chat del progetto "Calendario": "esporta in JSON settings, exercises e cards dal Cruscotto studio".

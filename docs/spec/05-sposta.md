@@ -1,7 +1,7 @@
 # 05 Sposta: findSlot, Non fatto, Parziale, Imprevisto
 
 **Obiettivo**: spostare le sessioni nel primo spazio libero.
-**Leggere**: `formato-calendar.md`, `lib/calendar/api.ts` e `fake.ts` (riga 03), `lib/time.ts`. Le azioni stanno nella scheda Oggi (riga 04).
+**Leggere**: `formato-calendar.md`, `lib/calendar/api.ts` e `fake.ts` (riga 03), `lib/time.ts`, `lib/calendar/queue.ts` (riga 04). Le azioni stanno nella scheda Oggi (riga 04).
 
 ## `lib/planner/findSlot.ts` (funzione pura)
 - Occupato = tutti gli eventi con orario del calendario di lavoro (anche lezioni, pasti, sport) ± margine (default 5 min), tranne quelli con disponibilità "libero".
@@ -9,7 +9,8 @@
 - **Test prima del codice**: evento che occupa la finestra, margine, evento "libero" ignorato, fine giornata, nessuno spazio entro 12 giorni, fuso orario.
 
 ## Azioni (tutte con anteprima e conferma)
-- **Non fatto** → calcola il primo spazio libero e lo mostra; sposta solo dopo conferma, prefisso ↻ + log. Se lo spazio è a più di 3 giorni, suggerisce "Parziale" o il ricalibro.
+- Scritture (insert/patch/delete) tramite la coda `lib/calendar/queue.ts` con If-Match; 412 → di nuovo anteprima.
+- **Non fatto** → calcola il primo spazio libero e lo mostra; sposta solo dopo conferma, prefisso ↻ + log. Se lo spazio è a più di 3 giorni, suggerisce "Parziale" o il ricalibro (disponibile dalla riga 07). Non fatto è azione esplicita dell'utente: può spostare qualsiasi sessione creata dall'app, vocab incluso.
 - **Parziale** → percentuale (25/50/75) + "dove sono arrivato" → prefisso ◐, log. Crea una sessione "(resto)" con durata = percentuale non fatta × durata pianificata (minimo 30 min) nel primo spazio libero, con "Resume from: …" in testa alla descrizione. Usa `events.insert`.
 - **Imprevisto**: giorno, dalle, alle, cosa → crea l'evento "Imprevisto: …" e sposta le sessioni che ci cadono dentro, con un riepilogo finale.
 

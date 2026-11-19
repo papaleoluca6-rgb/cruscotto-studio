@@ -13,7 +13,8 @@ Letto da 03, 04, 05, 07. Fonte unica di titoli, stati, descrizione e colori.
 - `◐ ` parziale
 - `↻ ` spostato (ancora da fare)
 - `✗ ` saltato
-- Una sessione senza prefisso con fine nel passato è "da segnare".
+- Da segnare = senza prefisso o con ↻, con fine nel passato.
+- Un solo prefisso per titolo: il nuovo sostituisce il vecchio.
 
 ## Descrizione su 4 righe
 - `Material:` file e pagine/slide esatte

@@ -1,19 +1,21 @@
-# 07 Ricalibro deterministico
+# 07 Ricalibro deterministico (`features/recalibrate/`)
 
 **Obiettivo**: riordinare i prossimi 7-10 giorni di studio senza AI.
-**Leggere**: `formato-calendar.md`, `lib/planner/weights.ts` (riga 06), `lib/planner/findSlot.ts` (riga 05), `lib/calendar/api.ts`, schema (`recalibrations`).
+**Leggere**: `formato-calendar.md`, `lib/planner/weights.ts` (riga 06), `lib/planner/findSlot.ts` (riga 05), `lib/calendar/api.ts`, `lib/calendar/queue.ts` (riga 04), schema (`recalibrations`).
 
 ## Uscita: lista di operazioni
+- Si avvia dal pulsante "Ricalibra" nella scheda Materie. Opera solo su tipi study/review/exercises: vocab (cinese) e pronto non si toccano mai.
+- Scritture (insert/patch/delete) tramite la coda `lib/calendar/queue.ts` con If-Match; 412 → di nuovo anteprima.
 - Operazioni `move`, `update`, `create`, `delete` sugli eventi di studio dei prossimi 7-10 giorni.
 - Anteprima (prima → dopo) e applicazione solo dopo conferma, una operazione alla volta, con un riepilogo.
 - Se un'operazione fallisce: riepilogo esatto di cosa è riuscito e cosa no, mai dati a metà senza dirlo.
 - Il tipo operazione vive in `lib/planner/`: `tipo` (move|update|create|delete), `eventId`, campi nuovi, `motivo`. Stessa uscita per il ricalibro AI (riga 09), che lo importa da lì.
 
 ## Regole (`lib/planner/`, pure)
-1. Rimettere in ordine logico Study → Exercises → Review della stessa materia e argomento.
+1. Rimettere in ordine logico Study → Exercises → Review della stessa materia. Exercises e Review si collegano allo Study precedente più vicino della stessa materia (Review: stesso argomento; Exercises: stessa materia).
 2. Spostare i ripassi che cadono prima del loro studio.
 3. Riportare ogni materia entro ±20% delle ore consigliate (da `weights.ts`), scambiando o accorciando sessioni.
-4. Non toccare scadenze, lezioni e calendari esclusi.
+4. Eventi non di studio: solo occupati, mai toccati; mai calendari esclusi.
 - **Test prima del codice** per le regole 1-4, ciascuna con un caso positivo e uno che non deve cambiare nulla.
 
 ## Salvataggio
