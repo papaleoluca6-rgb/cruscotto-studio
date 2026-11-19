@@ -22,7 +22,7 @@ Cartella `C:/Users/Utente/Desktop/registratore lecture note/` (sola lettura). Pe
 ## Resto
 - Repository locale già esistente; creare il remoto pubblico `cruscotto-studio` e fare il primo push.
 - `navigator.storage.persist()` all'avvio.
-- Impostazioni: fuso orario, finestra di studio, margine, calendario di lavoro, calendari esclusi, materie (nome, prefisso, colore); backup export/import.
+- Impostazioni: fuso orario, Client ID Google, finestra di studio, margine, calendario di lavoro, calendari esclusi, materie (nome, prefisso, colore); backup export/import.
 
 ## Modello dati (base di `db/schema.ts`; poi lo schema è la fonte)
 - `settings` (una riga): fuso orario, Client ID Google, calendario di lavoro (default `primary`), calendari esclusi, finestra di studio (default 08:00-22:45), margine tra eventi (default 5 min), provider AI scelto, chiavi per provider, modello per provider.

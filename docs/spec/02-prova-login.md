@@ -11,7 +11,9 @@ Prova tecnica prima di costruire le schermate. Nessuna funzionalità da consegna
 
 ## Token client GIS
 - Google Identity Services, token client, scope solo `https://www.googleapis.com/auth/calendar.events`.
-- Il token resta in memoria. Pagina di prova minima in `lib/calendar/auth.ts`, da rifinire nella riga 03.
+- Il token resta in memoria. `lib/calendar/auth.ts` contiene solo la logica GIS.
+- I pulsanti di prova (login ed `events.list`) stanno nella scheda Impostazioni, da rifinire nella riga 03.
+- `events.list` di prova: `fetch` minimo tramite `lib/http.ts` (timeout), passando `timeZone`.
 
 ## Da verificare sul telefono vero, con l'app installata come PWA
 - Login con un tocco: il popup di Google si apre e torna all'app.
@@ -20,5 +22,5 @@ Prova tecnica prima di costruire le schermate. Nessuna funzionalità da consegna
 - Una lettura `events.list` di prova va a buon fine.
 
 ## Fatto quando
-- I risultati sono scritti nella colonna Nota di `docs/ROADMAP.md`.
+- Il risultato è scritto in una riga nella colonna Nota di `docs/ROADMAP.md`.
 - Se il popup non funziona nella PWA installata: fermarsi e decidere con l'utente prima della riga 03.
