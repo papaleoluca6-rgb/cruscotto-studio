@@ -11,7 +11,7 @@ Delega: scritta a inizio riga con i criteri di `CLAUDE.md` ("diretto: motivo" ·
 | 01 | Base: scaffolding, Vitest, impostazioni, materie, backup | [01-base](spec/01-base.md) | ✅ | medio | — | Backup senza cache eventi; import rispetta le lapidi |
 | 02 | Prova del login Google su telefono | [02-prova-login](spec/02-prova-login.md) | ✅ | alto | — | PWA Android: popup GIS ok, rinnovo senza perdere stato, events.list ok, VPN spenta segnalata |
 | 03 | Client Calendar, cache, parse, finto Calendar | [03-calendar](spec/03-calendar.md) | ✅ | alto | diretto: codice già scritto, restavano verifica e revisione | Finto e vero Calendar ok: 287 eventi in cache, 40 sessioni, 8 da segnare |
-| 04 | Scheda Oggi, Fatto/Salta/Annulla, coda offline | [04-oggi](spec/04-oggi.md) | ⬜ | medio | | |
+| 04 | Scheda Oggi, Fatto/Salta/Annulla, coda offline | [04-oggi](spec/04-oggi.md) | ✅ | medio | lotto: due sessioni (richiesto da Luca) | Provato con Calendar vero su PC; sessioni riconosciute dal titolo anche senza materie |
 | 05 | Sposta: findSlot, Non fatto, Parziale, Imprevisto | [05-sposta](spec/05-sposta.md) | ⬜ | alto | | |
 | 06 | Materie e pesi | [06-pesi](spec/06-pesi.md) | ⬜ | medio | | |
 | 07 | Ricalibro deterministico | [07-ricalibro](spec/07-ricalibro.md) | ⬜ | alto | | |

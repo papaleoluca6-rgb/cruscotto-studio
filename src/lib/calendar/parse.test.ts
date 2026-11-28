@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { assertWritable, fromGoogle, needsMarking, parseDescription, parseSession, withStatus } from './parse'
+import { assertWritable, fromGoogle, needsMarking, nextTitle, parseDescription, parseSession, withStatus } from './parse'
 
 const S = (id: string, prefix: string) => ({ id, name: prefix, prefix })
 const subjects = [S('an', 'Analog'), S('com', 'Communication'), S('a2', 'Analisi 2'), S('alp', 'ALP'), S('cpt', 'CPT'), S('dsp', 'DSP'), S('cin', 'Cinese')]
@@ -68,7 +68,7 @@ describe('prefissi di stato', () => {
 })
 
 describe('eventi non di studio', () => {
-  it.each(['Lezione di Analisi 2', 'Pranzo', 'Analog', 'Analog Lab: misure', 'Riunione CPT', 'Fisica Study: x', 'DSP Exercises', 'Analog Review +1w', ''])('"%s" → tipo vuoto', (title) => {
+  it.each(['Lezione di Analisi 2', 'Pranzo', 'Analog', 'Analog Lab: misure', 'Riunione CPT', 'DSP Exercises', 'Analog Review +1w', ''])('"%s" → tipo vuoto', (title) => {
     const r = p(title)
     expect(r.kind).toBeUndefined()
     expect(r.subjectId).toBeUndefined()
@@ -117,6 +117,20 @@ describe('da segnare', () => {
 
   it('un evento non di studio non è mai da segnare', () => {
     expect(needsMarking({ kind: undefined, status: 'todo', end: now - 1 }, now)).toBe(false)
+  })
+})
+
+describe('nextTitle (azioni della coda, riga 04)', () => {
+  it.each([
+    ['DSP Study: FFT', 'done', '✅ DSP Study: FFT'],
+    ['↻ DSP Study: FFT', 'done', '✅ DSP Study: FFT'],
+    ['DSP Study: FFT', 'skip', '✗ DSP Study: FFT'],
+    ['↻ DSP Study: FFT', 'skip', '✗ DSP Study: FFT'],
+    ['✅ DSP Study: FFT', 'undo', 'DSP Study: FFT'],
+    ['✗ ◐ DSP Study: FFT', 'undo', 'DSP Study: FFT'],
+    ['✅ DSP Study: FFT', 'skip', '✗ DSP Study: FFT'],
+  ] as const)('%s + %s → %s', (title, action, out) => {
+    expect(nextTitle(title, action)).toBe(out)
   })
 })
 

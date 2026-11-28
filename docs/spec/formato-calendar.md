@@ -8,6 +8,7 @@ Letto da 03, 04, 05, 07. Fonte unica di titoli, stati, descrizione e colori.
 - `<Materia> Exercises: <esercizi>`
 - `<Materia> Simulazione: <prova>` (prova d'esame a tempo su temi passati).
 - Inoltre `CPT Pronto: …` (progetto) e `Ripasso vocaboli` (cinese).
+- Il titolo basta anche se la materia non è configurata: serve il tipo seguito dai due punti (le lezioni restano fuori). La materia si collega solo se il prefisso coincide con una di Impostazioni → Materie.
 
 ## Prefissi di stato nel titolo
 - `✅ ` fatto

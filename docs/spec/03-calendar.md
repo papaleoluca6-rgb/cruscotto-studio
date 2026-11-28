@@ -28,7 +28,7 @@
 - Timeout su ogni richiesta, risposta compresa (`lib/http.ts`).
 
 ## `parse.ts`
-- Prima il tag `cruscotto=1`; il titolo resta il fallback per eventi fatti a mano o da Claude. Riconosce titolo, prefisso di stato, materia (dal prefisso configurato), tipo (study/review/exercises/simulazione/pronto/vocab), titolo pulito e descrizione, secondo `formato-calendar.md`.
+- Prima il tag `cruscotto=1`; il titolo resta il fallback per eventi fatti a mano o da Claude. Riconosce titolo, prefisso di stato, materia (dal prefisso configurato; senza materia se non lo è), tipo (study/review/exercises/simulazione/pronto/vocab), titolo pulito e descrizione, secondo `formato-calendar.md`.
 - "Da segnare" = senza prefisso o con ↻, con fine nel passato. Un solo prefisso per titolo: il nuovo sostituisce il vecchio.
 - **Test prima del codice** (Vitest): un caso per ogni formato di titolo, per ogni prefisso, `Simulazione`, evento con tag e titolo non riconoscibile, titoli non di studio (lezioni, pasti: tipo vuoto, non sessioni), prefisso ↻ da segnare, un solo prefisso, descrizione con e senza `Notion:`.
 

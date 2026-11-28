@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { BackupPanel } from '../features/backup/BackupPanel'
 import { SettingsScreen } from '../features/settings/SettingsScreen'
+import { TodayScreen } from '../features/today/TodayScreen'
 import { Icon } from '../lib/Icon'
 import { TABS, tabFromHash } from './tabs'
 import { UpdateBanner } from './UpdateBanner'
@@ -32,7 +33,9 @@ export function App() {
         ))}
       </nav>
       <div className="shell-main">
-        {current === 'impostazioni' ? (
+        {current === 'oggi' ? (
+          <TodayScreen />
+        ) : current === 'impostazioni' ? (
           <SettingsScreen><BackupPanel /></SettingsScreen>
         ) : (
           <main className="ui-page">

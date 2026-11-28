@@ -1,4 +1,5 @@
 import Dexie, { type EntityTable, type Table } from 'dexie'
+import type { QueueOp } from './calQueue'
 import type { CalEvent, CalSync } from './calendarCache'
 
 // Unico punto in cui è definito il modello dati (IndexedDB sul dispositivo).
@@ -41,6 +42,8 @@ export interface Subject {
 
 // Tipi della cache di Calendar (events, calSync) in calendarCache.ts; tabelle e versioni solo qui.
 export type { AppTag, CalEvent, CalSync } from './calendarCache'
+// Tipi della coda di scritture su Calendar (calQueue) in calQueue.ts.
+export type { QueueAction, QueueOp, QueueState } from './calQueue'
 
 export type LogStatus = 'done' | 'partial' | 'skipped' | 'notDone' | 'moved'
 
@@ -147,6 +150,7 @@ export const db = new Dexie('cruscotto-studio') as Dexie & {
   tombstones: Table<Tombstone, [string, string]>
   recalibrations: EntityTable<Recalibration, 'id'>
   calSync: EntityTable<CalSync, 'key'>
+  calQueue: EntityTable<QueueOp, 'seq'>
 }
 
 // Per cambiare lo schema: aggiungere db.version(2) sotto, MAI modificare la versione 1.
@@ -165,6 +169,9 @@ db.version(1).stores({
 // v2 (riga 03): stato della lettura di Calendar; cache eventi svuotata (le righe vecchie non hanno l'etag).
 db.version(2).stores({ calSync: 'key' }).upgrade((tx) => tx.table('events').clear())
 
-/** Tabelle sincronizzate: le cancellazioni lasciano una lapide. `events` è una cache e non ne fa parte. */
+// v3 (riga 04): coda delle scritture su Calendar, in ordine di invio. Solo sul dispositivo (fuori da backup e sync).
+db.version(3).stores({ calQueue: '++seq, eventId' })
+
+/** Tabelle sincronizzate: le cancellazioni lasciano una lapide. `events`, `calSync` e `calQueue` non ne fanno parte. */
 export const SYNCED_TABLES = ['settings', 'subjects', 'log', 'exercises', 'cards', 'revlog', 'recalibrations'] as const
 export type SyncedTable = (typeof SYNCED_TABLES)[number]

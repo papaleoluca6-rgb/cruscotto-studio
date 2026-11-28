@@ -1,4 +1,5 @@
-import type { AppTag, CalEvent, SessionKind, SessionStatus, Subject } from '../../db/schema'
+import { ACTION_STATUS } from '../../db/calQueue'
+import type { AppTag, CalEvent, QueueAction, SessionKind, SessionStatus, Subject } from '../../db/schema'
 import { zonedToMs } from '../time'
 import type { GEvent } from './api'
 
@@ -27,6 +28,8 @@ const STATUS_RE = /^\s*(✅|◐|↻|✗)️?\s*/u
 const KINDS: SessionKind[] = ['study', 'review', 'exercises', 'simulazione', 'pronto', 'vocab']
 // Dal solo titolo servono i due punti ("DSP Exercises" senza testo può essere una lezione).
 const KIND_RE = /^(study|review(?:\s+(\+1d|\+1w|\+3w|pre-exam))?|exercises|simulazione|pronto)\s*:\s*(.*)$/i
+/** `<qualsiasi prefisso senza due punti> <Tipo>: …`, per le materie non configurate: il tipo seguito dai due punti tiene fuori le lezioni. */
+const ANY_PREFIX_RE = new RegExp(`^[^:]+?\\s+${KIND_RE.source.slice(1)}`, 'i')
 const VOCAB_RE = /^ripasso vocaboli\s*(?::\s*(.*))?$/i
 /** Materia dei "Ripasso vocaboli". */
 const VOCAB_SUBJECT = 'cinese'
@@ -49,6 +52,9 @@ export function withStatus(title: string, status: SessionStatus): string {
   return s ? `${s} ${clean}` : clean
 }
 
+/** Titolo dopo un'azione della coda (riga 04): Fatto → ✅, Salta → ✗, Annulla segno → nessun prefisso. */
+export const nextTitle = (title: string, action: QueueAction): string => withStatus(title, ACTION_STATUS[action])
+
 const low = (s: string) => s.trim().toLowerCase()
 
 function subjectFor(value: string | undefined, subjects: SubjectRef[]): string | undefined {
@@ -57,7 +63,10 @@ function subjectFor(value: string | undefined, subjects: SubjectRef[]): string |
   return (subjects.find((s) => s.id === value) ?? subjects.find((s) => low(s.prefix) === v || low(s.name) === v))?.id
 }
 
-/** Riconoscimento dal solo titolo (senza prefisso di stato): richiede una materia configurata, così le lezioni restano fuori. */
+/**
+ * Riconoscimento dal solo titolo (senza prefisso di stato). Prima le materie configurate (prefisso più lungo);
+ * poi qualsiasi prefisso seguito dal tipo e dai due punti, senza materia collegata.
+ */
 function fromTitle(clean: string, subjects: SubjectRef[]): Pick<SessionInfo, 'kind' | 'subjectId' | 'reviewStep' | 'topic'> | null {
   const vocab = VOCAB_RE.exec(clean)
   if (vocab) return { kind: 'vocab', subjectId: subjectFor(VOCAB_SUBJECT, subjects), topic: vocab[1]?.trim() ?? '' }
@@ -70,7 +79,10 @@ function fromTitle(clean: string, subjects: SubjectRef[]): Pick<SessionInfo, 'ki
     const kind = low(m[1]).split(/\s/)[0] as SessionKind
     return { kind, subjectId: s.id, reviewStep: m[2]?.toLowerCase() as ReviewStep | undefined, topic: m[3]?.trim() ?? '' }
   }
-  return null
+  const any = ANY_PREFIX_RE.exec(clean)
+  if (!any) return null
+  const kind = low(any[1]).split(/\s/)[0] as SessionKind
+  return { kind, subjectId: undefined, reviewStep: any[2]?.toLowerCase() as ReviewStep | undefined, topic: any[3]?.trim() ?? '' }
 }
 
 export function parseSession(ev: { title: string; tag?: Record<string, string> }, subjects: SubjectRef[]): SessionInfo {

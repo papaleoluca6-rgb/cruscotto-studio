@@ -73,7 +73,7 @@ describe('refreshEvents', () => {
   it('le materie cambiate si riapplicano a tutta la cache', async () => {
     const f = new FakeCalendar({ events: [ev('a', 1, 'Analog Study: bjt')] })
     await refreshEvents(f, TZ, { now: NOW })
-    expect((await db.events.get('a'))!.kind).toBeUndefined()
+    expect(await db.events.get('a')).toMatchObject({ kind: 'study', subjectId: undefined })
     await db.subjects.add({ id: 'an', name: 'Analog', prefix: 'Analog', colorId: '6', difficulty: 3, importance: 3, updatedAt: 1 })
     await refreshEvents(f, TZ, { now: NOW })
     expect(await db.events.get('a')).toMatchObject({ kind: 'study', subjectId: 'an' })

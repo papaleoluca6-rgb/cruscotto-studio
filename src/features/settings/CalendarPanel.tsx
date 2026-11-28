@@ -1,9 +1,9 @@
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { getSetting, setSetting, useSetting } from '../../db/settings'
-import { calendarErrorMessage, googleClient, type CalendarClient } from '../../lib/calendar/api'
-import { expireToken, forgetToken, getToken, isGisLoaded, loadGis, requestToken, subscribeToken, tokenState, validToken } from '../../lib/calendar/auth'
+import { calendarErrorMessage } from '../../lib/calendar/api'
+import { expireToken, forgetToken, getToken, isGisLoaded, loadGis, requestToken, subscribeToken, tokenState } from '../../lib/calendar/auth'
 import { clearEventCache, dropStaleCache, refreshEvents, type RefreshResult } from '../../lib/calendar/cache'
-import { devFakeCalendar } from '../../lib/calendar/fake'
+import { workClient } from '../../lib/calendar/client'
 import { HttpError } from '../../lib/http'
 import { Icon } from '../../lib/Icon'
 import { CacheSummary } from './CacheSummary'
@@ -65,11 +65,7 @@ export function CalendarPanel() {
   // Il token si chiede prima, dentro il tocco; il client poi usa solo quello in memoria.
   // Impostazioni rilette dal database: durante il caricamento useSetting dà i default (es. primary).
   const refresh = async () => {
-    const [cal, zone, ex, fake] = await Promise.all([getSetting('calendar.workId'), getSetting('timeZone'), getSetting('calendar.excluded'), getSetting('dev.fakeCalendar')])
-    const client: CalendarClient = DEV && fake ? devFakeCalendar(cal, zone, ex) : googleClient({
-      calendarId: cal, timeZone: zone, excluded: ex,
-      token: async () => validToken() ?? Promise.reject(new HttpError('http', 'HTTP 401: token scaduto durante la lettura', 401)),
-    })
+    const { client, tz: zone } = await workClient()
     return resultText(await refreshEvents(client, zone))
   }
 

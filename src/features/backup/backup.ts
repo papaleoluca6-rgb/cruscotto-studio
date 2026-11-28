@@ -2,8 +2,11 @@ import { db, type Tombstone } from '../../db/schema'
 import { isSecretKey, SPECS, type SettingKey } from '../../db/settings'
 import { decode, encode, type Tables } from './format'
 
-/** `events` e `calSync` sono la cache di Calendar: si rileggono da lì, un backup vecchio li renderebbe stantii. */
-const SKIPPED = new Set(['events', 'calSync'])
+/**
+ * `events` e `calSync` sono la cache di Calendar: si rileggono da lì, un backup vecchio li renderebbe stantii.
+ * Fuori anche `calQueue`, la coda per Calendar (etag validi solo su questo dispositivo).
+ */
+const SKIPPED = new Set(['events', 'calSync', 'calQueue'])
 /** Le chiavi API non escono dal dispositivo e non si importano. */
 const withoutSecrets = (table: string, rows: unknown[]) =>
   table === 'settings' ? rows.filter((r) => !isSecretKey((r as { key?: unknown }).key)) : rows
@@ -12,7 +15,7 @@ const withoutSecrets = (table: string, rows: unknown[]) =>
 export const TABLE_LABELS: Record<string, string> = {
   settings: 'impostazioni', subjects: 'materie', events: 'eventi di Calendar', log: 'registro sessioni', exercises: 'esercizi',
   cards: 'flashcard', revlog: 'ripassi', tombstones: 'cancellazioni', recalibrations: 'ricalibri',
-  calSync: 'stato lettura Calendar',
+  calSync: 'stato lettura Calendar', calQueue: 'coda per Calendar',
 }
 
 const backupTables = () => db.tables.filter((t) => !SKIPPED.has(t.name))

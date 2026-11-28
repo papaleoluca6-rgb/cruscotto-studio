@@ -36,11 +36,14 @@ describe('backup', () => {
     await setSetting('study.marginMin', 7)
     await db.calSync.put({ key: 'work', source: 'fake', calendarId: 'primary', timeZone: 'Asia/Shanghai', mode: 'sync', lastSync: 1 })
     await db.events.add({ id: 'g1', calendarId: 'primary', etag: '"1"', title: 't', cleanTitle: 't', status: 'todo', appTag: false, start: 0, end: 1, transparency: 'opaque', allDay: false, description: '', updated: '' })
+    await db.calQueue.add({ eventId: 'g1', calendarId: 'primary', action: 'skip', etag: '"1"', fromTitle: 't', toTitle: '✗ t', plannedStart: 0, plannedMin: 1, createdAt: 1, rev: 0, state: 'pending' })
 
     const json = await exportBackup()
     expect(json).not.toContain('segreta')
     expect(decode(json).tables.events).toBeUndefined()
     expect(decode(json).tables.calSync).toBeUndefined()
+    // Riga 04: la coda per Calendar resta sul dispositivo.
+    expect(decode(json).tables.calQueue).toBeUndefined()
 
     await Promise.all(db.tables.map((t) => t.clear()))
     const res = await importBackup(json)
