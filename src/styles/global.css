@@ -150,6 +150,7 @@ textarea.ui-input { padding: 12px 14px; resize: vertical; }
 .ui-sec { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
 .ui-sec h2 { margin: 0; font-size: 1.1rem; }
 .ui-stack { display: flex; flex-direction: column; gap: 8px; }
+ul.ui-stack { list-style: none; margin: 0; padding: 0; }
 .ui-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; background: var(--s3); color: var(--t2); font-size: 12px; font-weight: 600; white-space: nowrap; }
 .ui-badge.ok { background: var(--ok-soft); color: var(--ok); }
 .ui-badge.warn { background: var(--warn-soft); color: var(--warn); }
