@@ -50,7 +50,8 @@ export function postJson<T>(url: string, headers: Record<string, string>, body: 
     'chiave errata o non autorizzata')
 }
 
-/** GET JSON (Google Calendar): 401/403 = token scaduto o permesso mancante. */
-export function getJson<T>(url: string, headers: Record<string, string>, timeoutMs = 20000): Promise<T> {
-  return requestJson<T>(url, { method: 'GET', headers }, timeoutMs, 'token scaduto o permesso mancante')
+/** Richiesta a Google (Calendar): 401/403 = token scaduto o permesso mancante. Con `body` lo invia come JSON. */
+export function googleJson<T>(method: 'GET' | 'POST' | 'PATCH' | 'DELETE', url: string, headers: Record<string, string>, body?: unknown, timeoutMs = 20000): Promise<T> {
+  const init: RequestInit = body === undefined ? { method, headers } : { method, headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body) }
+  return requestJson<T>(url, init, timeoutMs, 'token scaduto o permesso mancante')
 }

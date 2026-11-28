@@ -24,7 +24,9 @@ src/
   lib/planner/    findSlot.ts, weights.ts, regole di ricalibro, tipo operazione, fsrs.ts, merge.ts (pure)
   styles/         global.css (token di design)
   features/       today, timer, week, recalibrate, subjects, exercises, flashcards, settings, backup
-docs/ROADMAP.md, docs/spec/
+docs/ROADMAP.md, docs/spec/   roadmap e spec (estratti già pronti: non rileggere le fonti)
+.ai/plans/, .ai/lotti/         piani, resoconti, lotti (fuori da git)
+.claude/agents/                esecutore, revisore, verificatore (fuori da git)
 ```
 
 ## Regole
@@ -48,8 +50,17 @@ docs/ROADMAP.md, docs/spec/
 - Repo pubblico: niente dati, chiavi o Client ID nei commit. Niente librerie da CDN.
 
 ## Come lavoriamo
-- A inizio sessione leggere solo `CLAUDE.md` + il file Spec della riga in ROADMAP + `src/db/schema.ts` (o il modello in 01-base.md) (+ file citati). Una sessione per riga della roadmap.
-- Test prima del codice per `lib/planner/` e `lib/calendar/parse.ts`. In sviluppo usare il finto Calendar.
-- A fine funzionalità un sub-agente rivede le modifiche contro regole ed errori da evitare; poi stato in `docs/ROADMAP.md` (una riga), note nel commit.
-- Sub-agenti per ricerche e verifiche; stessi file = un solo agente.
-- Effort alto solo per le righe 02, 03, 05, 07, 12.
+- Inizio sessione: leggere solo `CLAUDE.md`, la riga di `docs/ROADMAP.md`, la sua spec, `src/db/schema.ts` (o il modello in 01-base.md) e i file che la spec cita. Una sessione per riga; riga finita → stato in ROADMAP (una riga), note nel commit, `/clear`.
+- Commit, push, tag, merge solo dopo il sì di Luca; gli agenti mai (nemmeno `git add`). Commit in italiano: "Riga NN: …", elenco per file, riga "Revisione con sub-agente: …".
+- Test prima del codice per `lib/planner/` e `lib/calendar/parse.ts`. In sviluppo il finto Calendar; verifica nel browser con `preview_start` (`.claude/launch.json`); le prove sul telefono le fa Luca.
+- Tetto contesto 150K: oltre, chiudi la riga o `/handoff` e `/clear`. Piani e resoconti lunghi in `.ai/plans/`, in chat solo il riassunto. `strategic-compact` ai cambi di fase, mai a metà.
+- **Modello: Sonnet di default.** Opus (`/model opus`) solo per il piano delle righe con Effort alto (colonna in ROADMAP) e per la verifica finale; poi `/model sonnet`.
+- **Delega** (scelta scritta nella colonna Delega a inizio riga):
+  - Più di 2 file o 200 righe da leggere → `Explore` (ricerca) o `esecutore` (piano da `.ai/plans/_TEMPLATE.md`); diretto solo se ≤2 file e ≤200 righe, o contesto già in sessione.
+  - Ogni modifica al codice: `revisore` (Haiku) contro la checklist del piano e §Regole/§Errori da evitare; righe con Effort alto: `revisore` con `model: sonnet`.
+  - Stessi file = un solo agente. Resoconto con MANCAVA → correggi spec o template, non solo il file.
+- **Righe grandi** (molti file nuovi, es. 03, 08, 09): due sessioni separate (`/metodo-lavoro lotto <NN>`), file in `.ai/lotti/<NN>/` (modelli in `.ai/lotti/_MODELLO/`).
+  - Opus decide tutto in `01-SCELTE.md`; scrive i file delicati (`db/schema.ts`, tipi e test di `lib/planner/` e `parse.ts`, `lib/http.ts`) e i piani `.ai/plans/<NN>-comune.md` + `<NN>-MM.md`; poi `PIANO APPROVATO (Opus, <data>)` in testa al comune e si ferma.
+  - Sonnet parte solo con quella riga, scrive solo i file dei piani (fino al verde dei test di Opus), non decide: ogni dubbio in `_DOMANDE.md`, quel punto resta fermo.
+  - Chiusura: `verificatore` (Opus) fino a CHIUSA; `Stato: CHIUSA (verifica Opus, <data>)` in `00-GUIDA.md`, "Da decidere" vuoto.
+- Controllo: in `/usage` devono comparire righe Sonnet e Haiku; solo Opus = metodo non rispettato.

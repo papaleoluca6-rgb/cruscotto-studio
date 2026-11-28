@@ -33,7 +33,7 @@ export const subscribeToken = (l: () => void) => {
 export const tokenState = () => current
 export const validToken = (now = Date.now()) => (current && now < current.expiresAt ? current.token : null)
 export const forgetToken = () => setCurrent(null)
-/** Solo per la prova del rinnovo: il token in memoria risulta scaduto. */
+/** Il token in memoria risulta scaduto (dopo un 401): il prossimo tocco lo rinnova. */
 export const expireToken = () => current && setCurrent({ ...current, expiresAt: 0 })
 
 const oauth2 = () => window.google?.accounts?.oauth2

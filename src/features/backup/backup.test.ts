@@ -34,11 +34,13 @@ describe('backup', () => {
     await db.subjects.add(s)
     await setSetting('apiKey.gemini', 'segreta')
     await setSetting('study.marginMin', 7)
-    await db.events.add({ id: 'g1', calendarId: 'primary', title: 't', cleanTitle: 't', status: 'todo', appTag: false, start: 0, end: 1, transparency: 'opaque', allDay: false, description: '', updated: '' })
+    await db.calSync.put({ key: 'work', source: 'fake', calendarId: 'primary', timeZone: 'Asia/Shanghai', mode: 'sync', lastSync: 1 })
+    await db.events.add({ id: 'g1', calendarId: 'primary', etag: '"1"', title: 't', cleanTitle: 't', status: 'todo', appTag: false, start: 0, end: 1, transparency: 'opaque', allDay: false, description: '', updated: '' })
 
     const json = await exportBackup()
     expect(json).not.toContain('segreta')
     expect(decode(json).tables.events).toBeUndefined()
+    expect(decode(json).tables.calSync).toBeUndefined()
 
     await Promise.all(db.tables.map((t) => t.clear()))
     const res = await importBackup(json)

@@ -1,4 +1,5 @@
 import Dexie, { type EntityTable, type Table } from 'dexie'
+import type { CalEvent, CalSync } from './calendarCache'
 
 // Unico punto in cui è definito il modello dati (IndexedDB sul dispositivo).
 // Ogni riga ha `id` UUID e `updatedAt` (ms) per la sincronizzazione (riga 12), tranne `events` (id di Google)
@@ -38,28 +39,8 @@ export interface Subject {
   updatedAt: number
 }
 
-/** Cache di un evento di Google Calendar (si rilegge da Calendar: fuori da backup e sincronizzazione). */
-export interface CalEvent {
-  /** id di Google */
-  id: string
-  calendarId: string
-  title: string
-  /** Titolo senza prefisso di stato. */
-  cleanTitle: string
-  status: SessionStatus
-  subjectId?: Id
-  kind?: SessionKind
-  /** Porta il tag dell'app (extendedProperties.private.cruscotto = '1'). */
-  appTag: boolean
-  /** Inizio e fine in ms (eventi di tutto il giorno: mezzanotte nel fuso utente). */
-  start: number
-  end: number
-  transparency: 'opaque' | 'transparent'
-  allDay: boolean
-  description: string
-  /** Campo `updated` di Google (RFC 3339). */
-  updated: string
-}
+// Tipi della cache di Calendar (events, calSync) in calendarCache.ts; tabelle e versioni solo qui.
+export type { AppTag, CalEvent, CalSync } from './calendarCache'
 
 export type LogStatus = 'done' | 'partial' | 'skipped' | 'notDone' | 'moved'
 
@@ -165,6 +146,7 @@ export const db = new Dexie('cruscotto-studio') as Dexie & {
   revlog: EntityTable<RevlogEntry, 'id'>
   tombstones: Table<Tombstone, [string, string]>
   recalibrations: EntityTable<Recalibration, 'id'>
+  calSync: EntityTable<CalSync, 'key'>
 }
 
 // Per cambiare lo schema: aggiungere db.version(2) sotto, MAI modificare la versione 1.
@@ -179,6 +161,9 @@ db.version(1).stores({
   tombstones: '[table+id], updatedAt',
   recalibrations: 'id, date',
 })
+
+// v2 (riga 03): stato della lettura di Calendar; cache eventi svuotata (le righe vecchie non hanno l'etag).
+db.version(2).stores({ calSync: 'key' }).upgrade((tx) => tx.table('events').clear())
 
 /** Tabelle sincronizzate: le cancellazioni lasciano una lapide. `events` è una cache e non ne fa parte. */
 export const SYNCED_TABLES = ['settings', 'subjects', 'log', 'exercises', 'cards', 'revlog', 'recalibrations'] as const

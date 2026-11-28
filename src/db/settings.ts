@@ -26,6 +26,8 @@ export type SettingsMap = {
   'reminder.popupMin': number
   /** Ritenzione desiderata FSRS (0,7-0,97). */
   'fsrs.retention': number
+  /** Solo in sviluppo (npm run dev): legge e scrive sul finto Calendar invece che su Google. */
+  'dev.fakeCalendar': boolean
 } & { [P in AiProviderId as `apiKey.${P}`]: string } & { [P in AiProviderId as `ai.model.${P}`]: string }
 
 export type SettingKey = keyof SettingsMap
@@ -35,6 +37,7 @@ const time = (v: unknown): v is string => str(v) && /^([01]\d|2[0-3]):[0-5]\d$/.
 const int = (min: number, max: number) => (v: unknown): v is number => Number.isInteger(v) && (v as number) >= min && (v as number) <= max
 const num = (min: number, max: number) => (v: unknown): v is number => typeof v === 'number' && v >= min && v <= max
 const strList = (v: unknown): v is string[] => Array.isArray(v) && v.every(str)
+const bool = (v: unknown): v is boolean => typeof v === 'boolean'
 const oneOf = <T extends string>(list: readonly T[]) => (v: unknown): v is T => list.includes(v as T)
 
 interface Spec<T> { def: T; ok: (v: unknown) => v is T }
@@ -56,6 +59,7 @@ export const SPECS: Specs = {
   'ai.provider': { def: 'none', ok: oneOf(['none', ...AI_PROVIDERS.map((p) => p.id)]) },
   'reminder.popupMin': { def: 10, ok: int(0, 240) },
   'fsrs.retention': { def: 0.9, ok: num(0.7, 0.97) },
+  'dev.fakeCalendar': { def: true, ok: bool },
   ...perProvider('apiKey.'),
   ...perProvider('ai.model.'),
 }

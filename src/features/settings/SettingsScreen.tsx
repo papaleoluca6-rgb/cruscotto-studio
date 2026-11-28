@@ -3,7 +3,7 @@ import { useSetting } from '../../db/settings'
 import { isValidTimeZone } from '../../lib/time'
 import { AiSettings } from './AiSettings'
 import { ListSetting, NumberSetting, TextSetting } from './fields'
-import { GoogleTest } from './GoogleTest'
+import { CalendarPanel } from './CalendarPanel'
 import { SubjectsEditor } from './SubjectsEditor'
 import './settings.css'
 
@@ -31,8 +31,8 @@ export function SettingsScreen({ children }: { children?: ReactNode }) {
             check={(v) => (isValidTimeZone(v) ? undefined : `"${v}" non è un fuso orario riconosciuto`)} />
         </div>
         <ListSetting k="calendar.excluded" label="Calendari esclusi" placeholder="Un id di calendario per riga"
-          help="Mai letti né modificati dall'app." />
-        <GoogleTest />
+          help="Mai letti né modificati dall'app. Scrivi gli id come in «Calendario di lavoro»: il principale si chiama primary." />
+        <CalendarPanel />
       </section>
 
       <section className="ui-sec">
