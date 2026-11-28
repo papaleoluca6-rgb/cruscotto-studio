@@ -1,6 +1,6 @@
 import { HttpError } from '../http'
 import { zonedToMs } from '../time'
-import { assertNotExcluded, checkListParams, EtagMismatchError, type CalendarClient, type EventBody, type GEvent, type ListPage, type ListParams, type WriteOpts } from './api'
+import { assertNotExcluded, checkListParams, EtagMismatchError, type CalendarClient, type EventBody, type GEvent, type InsertBody, type ListPage, type ListParams, type WriteOpts } from './api'
 import { sampleEvents } from './fakeData'
 
 // Finto Google Calendar in memoria (docs/spec/03-calendar-fake.md): stessa interfaccia del client vero, 400/404/410/412,
@@ -103,9 +103,11 @@ export class FakeCalendar implements CalendarClient {
     return this.save({ ...ev, ...structuredClone(body), ...(priv && { extendedProperties: { ...ev.extendedProperties, ...priv } }) })
   }
 
-  async insert(body: EventBody): Promise<GEvent> {
-    this.calls.push('insert')
-    return this.save({ ...structuredClone(body), id: `fake${this.nextId++}`, status: 'confirmed' })
+  async insert(body: InsertBody): Promise<GEvent> {
+    this.calls.push(`insert ${body.id ?? ''}`.trim())
+    // Come Google: un id già usato (anche da un evento cancellato) risponde 409.
+    if (body.id && this.store.has(body.id)) throw new HttpError('http', `HTTP 409: evento ${body.id} già esistente`, 409)
+    return this.save({ ...structuredClone(body), id: body.id ?? `fake${this.nextId++}`, status: 'confirmed' })
   }
 
   async delete(id: string, o?: WriteOpts): Promise<void> {

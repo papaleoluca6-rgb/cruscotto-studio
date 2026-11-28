@@ -35,6 +35,8 @@ export interface ListParams {
 export interface ListPage { items: GEvent[]; nextPageToken?: string; nextSyncToken?: string }
 export interface WriteOpts { /** etag atteso: header If-Match (412 se l'evento è cambiato). */ ifMatch?: string }
 export type EventBody = Partial<Omit<GEvent, 'id' | 'etag' | 'updated'>>
+/** Corpo di events.insert: con `id` scelto dall'app (base32hex: 0-9 a-v, 5-1024 caratteri) un nuovo invio dà 409, non un doppione. */
+export type InsertBody = EventBody & { id?: string }
 
 /**
  * Client di un solo calendario (quello di lavoro): Google vero o finto (fake.ts), stessa interfaccia.
@@ -46,7 +48,8 @@ export interface CalendarClient {
   list(p: ListParams): Promise<ListPage>
   get(id: string): Promise<GEvent>
   patch(id: string, body: EventBody, o?: WriteOpts): Promise<GEvent>
-  insert(body: EventBody): Promise<GEvent>
+  /** 409 se esiste già un evento con quell'`id` (anche cancellato). */
+  insert(body: InsertBody): Promise<GEvent>
   delete(id: string, o?: WriteOpts): Promise<void>
 }
 

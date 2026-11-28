@@ -17,3 +17,5 @@
 /* Triangolino: con display:flex il marcatore nativo sparisce (Domanda 6) */
 .today-more > summary::before { content: ''; flex: none; border: 6px solid transparent; border-left: 8px solid var(--t2); border-right: 0; transition: rotate var(--dur) var(--ease); }
 .today-more[open] > summary::before { rotate: 90deg; }
+
+.today-percent { display: flex; flex-wrap: wrap; gap: 8px; }

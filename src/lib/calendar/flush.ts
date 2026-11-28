@@ -1,7 +1,7 @@
-import { MARK_STATUSES } from '../../db/calQueue'
-import { db, newId, type QueueOp, type Subject } from '../../db/schema'
+import { db, type QueueOp, type Subject } from '../../db/schema'
 import { HttpError } from '../http'
-import { calendarErrorMessage, type CalendarClient, type GEvent } from './api'
+import { calendarErrorMessage, timesBody, type CalendarClient, type EventBody, type GEvent } from './api'
+import { commit } from './flushCommit'
 import { fromGoogle, nextTitle } from './parse'
 import type { FlushResult } from './queue'
 
@@ -84,6 +84,23 @@ function stop(e: unknown, ctx: Ctx): false {
   return false
 }
 
+/** Corpo di PATCH o insert (S9): senza nuovi orari né extra resta `{ summary }`. */
+function bodyOf(op: QueueOp, tz: string): EventBody {
+  const times = op.toStart !== undefined ? timesBody(op.toStart, op.toEnd ?? op.toStart + op.plannedMin * 60_000, tz) : {}
+  return { ...op.extra, summary: op.toTitle, ...times }
+}
+
+/** La chiamata a Calendar: PATCH con If-Match, o insert con id dell'app (409 = già creato: si rilegge). */
+async function transmit(op: QueueOp, ctx: Ctx): Promise<GEvent> {
+  if (op.action !== 'insert') return ctx.client.patch(op.eventId, bodyOf(op, ctx.tz), { ifMatch: op.etag || undefined })
+  try {
+    return await ctx.client.insert({ ...bodyOf(op, ctx.tz), id: op.eventId })
+  } catch (e) {
+    if (statusOf(e) !== 409) throw e
+    return ctx.client.get(op.eventId)
+  }
+}
+
 /** Invia un'azione; false = fermare l'invio. */
 async function send(snap: QueueOp, ctx: Ctx): Promise<boolean> {
   // Riga riletta prima di ogni invio: scartata o sostituita mentre partivano le precedenti (Domanda 2).
@@ -93,11 +110,13 @@ async function send(snap: QueueOp, ctx: Ctx): Promise<boolean> {
     await reject(op, 'Calendario di lavoro cambiato: azione non inviata.', ctx)
     return true
   }
+  // Il resto di un Parziale aspetta finché l'azione d'origine è in coda (anche da rivedere): resta 'pending'.
+  if (op.action === 'insert' && op.linkedTo && (await db.calQueue.where('eventId').equals(op.linkedTo).count()) > 0) return true
   let resp: GEvent
   try {
-    resp = await ctx.client.patch(op.eventId, { summary: op.toTitle }, { ifMatch: op.etag || undefined })
+    resp = await transmit(op, ctx)
   } catch (e) {
-    if (statusOf(e) === 412) return reread(op, ctx)
+    if (op.action !== 'insert' && statusOf(e) === 412) return reread(op, ctx)
     if (isGone(e)) await gone(op, ctx)
     else if (isRefused(e)) await reject(op, calendarErrorMessage(e), ctx)
     else {
@@ -114,30 +133,6 @@ async function send(snap: QueueOp, ctx: Ctx): Promise<boolean> {
   }
   ctx.result.sent.push(op)
   return true
-}
-
-/** Dopo un PATCH riuscito: cache, registro e coda nella stessa transazione. */
-async function commit(op: QueueOp, resp: GEvent, ctx: Ctx) {
-  await db.transaction('rw', db.calQueue, db.events, db.log, db.tombstones, async () => {
-    await db.events.put(fromGoogle(resp, op.calendarId, ctx.subjects, ctx.tz))
-    const cur = await db.calQueue.get(op.seq)
-    // Sostituita durante l'invio: resta in coda con l'etag nuovo, il registro lo scriverà il prossimo invio.
-    if (cur && cur.rev !== op.rev) {
-      await db.calQueue.put({ ...cur, etag: resp.etag ?? '', fromTitle: resp.summary ?? '' })
-      return
-    }
-    const marks = await db.log.where('eventId').equals(op.eventId).filter((l) => MARK_STATUSES.includes(l.status)).toArray()
-    const old = marks.map((l) => l.id)
-    await db.log.bulkDelete(old)
-    await db.tombstones.bulkPut(old.map((id) => ({ table: 'log', id, updatedAt: ctx.now })))
-    if (op.action !== 'undo') {
-      await db.log.add({
-        id: newId(), eventId: op.eventId, status: op.action === 'done' ? 'done' : 'skipped', plannedStart: op.plannedStart,
-        plannedMin: op.plannedMin, ...(op.action === 'done' && { actualMin: op.actualMin }), date: op.createdAt, updatedAt: ctx.now,
-      })
-    }
-    await db.calQueue.delete(op.seq)
-  })
 }
 
 /** 412: rilegge l'evento; se è ancora una sessione di studio l'azione aspetta la riconferma. */

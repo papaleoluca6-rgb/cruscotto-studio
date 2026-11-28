@@ -37,10 +37,13 @@ export function groupSessions(events: ViewEvent[], now: number, tz: string): Gro
   return g
 }
 
+/** Azioni dei bottoni di una sessione (riga 05: Parziale e Non fatto). */
+export type RowAction = Extract<QueueAction, 'done' | 'partial' | 'notDone' | 'skip' | 'undo'>
+
 /** Azioni mostrate su una sessione: nessuna se ha un'azione da rivedere o non inviata. */
-export function actionsFor(e: ViewEvent): QueueAction[] {
+export function actionsFor(e: ViewEvent): RowAction[] {
   if (e.queued && e.queued.state !== 'pending') return []
-  return e.status === 'todo' || e.status === 'moved' ? ['done', 'skip'] : ['undo']
+  return e.status === 'todo' || e.status === 'moved' ? ['done', 'partial', 'notDone', 'skip'] : ['undo']
 }
 
 /** Minuti pianificati (fine − inizio), arrotondati. */

@@ -43,6 +43,7 @@ export const ACTUAL_MIN = { min: 1, max: 600 } as const
  * se c'è già un'azione da rivedere sullo stesso evento o se i minuti non sono validi.
  */
 export async function enqueue(ev: CalEvent, action: QueueAction, o: EnqueueOpts): Promise<QueueOp> {
+  if (action !== 'done' && action !== 'skip' && action !== 'undo') throw new Error('Azione non valida qui: usa queueMove.')
   return db.transaction('rw', db.calQueue, async () => {
     assertWritable(ev, o.workId, o.excluded)
     const existing = await db.calQueue.where('eventId').equals(ev.id).first()
@@ -51,6 +52,7 @@ export async function enqueue(ev: CalEvent, action: QueueAction, o: EnqueueOpts)
     const marked = status !== 'todo' && status !== 'moved'
     if (action !== 'undo' && marked) throw new Error('Questa sessione è già segnata: prima annulla il segno.')
     if (action === 'undo' && !marked) throw new Error('Questa sessione non ha un segno da annullare.')
+    if (action === 'undo' && status === 'partial') await dropRestoOf(ev.id)
     const min = o.actualMin
     if (action === 'done' && !(min !== undefined && Number.isInteger(min) && min >= ACTUAL_MIN.min && min <= ACTUAL_MIN.max)) {
       throw new Error('Minuti non validi: scrivi un numero intero tra 1 e 600.')
@@ -62,6 +64,9 @@ export async function enqueue(ev: CalEvent, action: QueueAction, o: EnqueueOpts)
       const next: QueueOp = { ...existing, action, toTitle: nextTitle(existing.fromTitle, action), createdAt: now, rev: existing.rev + 1 }
       delete next.actualMin
       delete next.lastError
+      delete next.percent
+      delete next.note
+      delete next.reason
       Object.assign(next, actual)
       await db.calQueue.put(next)
       return next
@@ -88,7 +93,17 @@ export async function confirmConflict(seq: number): Promise<void> {
 
 /** Toglie un'azione dalla coda senza inviarla (nessun effetto su Calendar né sul registro). */
 export async function discard(seq: number): Promise<void> {
-  await db.calQueue.delete(seq)
+  await db.transaction('rw', db.calQueue, async () => {
+    const op = await db.calQueue.get(seq)
+    await db.calQueue.delete(seq)
+    if (op?.action === 'partial') await dropRestoOf(op.eventId, true)
+  })
+}
+
+/** Toglie dalla coda il resto ('insert' legato) di un Parziale: solo quelli in attesa, o tutti con `any`. */
+async function dropRestoOf(eventId: string, any = false): Promise<void> {
+  const rows = (await db.calQueue.toArray()).filter((x) => x.action === 'insert' && x.linkedTo === eventId && (any || x.state === 'pending'))
+  await db.calQueue.bulkDelete(rows.map((x) => x.seq))
 }
 
 /** Applica alla cache le azioni in coda (stesso ordine degli eventi). */
@@ -99,7 +114,8 @@ export function withPending(events: CalEvent[], ops: QueueOp[]): ViewEvent[] {
     if (!op) return ev
     if (op.state !== 'pending') return { ...ev, queued: op }
     const { status, clean } = stripStatus(op.toTitle)
-    return { ...ev, title: op.toTitle, status, cleanTitle: clean, queued: op }
+    const times = op.toStart !== undefined ? { start: op.toStart, end: op.toEnd ?? op.toStart + (ev.end - ev.start) } : {}
+    return { ...ev, ...times, title: op.toTitle, status, cleanTitle: clean, queued: op }
   })
 }
 

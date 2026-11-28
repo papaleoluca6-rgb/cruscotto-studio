@@ -1,6 +1,6 @@
-import type { QueueAction } from '../../db/schema'
 import type { ViewEvent } from '../../lib/calendar/queue'
 import { SessionRow } from './SessionRow'
+import type { RowAction } from './today'
 
 export function SessionList({ title, events, empty, collapsible, showDay, tz, now, subjects, onAction }: {
   title: string
@@ -11,7 +11,7 @@ export function SessionList({ title, events, empty, collapsible, showDay, tz, no
   tz: string
   now: number
   subjects: Map<string, { name: string; colorId: string }>
-  onAction?: (e: ViewEvent, a: QueueAction) => void
+  onAction?: (e: ViewEvent, a: RowAction) => void
 }) {
   const body = events.length ? (
     <ul className="ui-stack">

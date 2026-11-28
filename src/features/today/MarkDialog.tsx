@@ -1,19 +1,22 @@
 import { useEffect, useState } from 'react'
 import type { QueueAction, QueueOp } from '../../db/schema'
-import { getSetting } from '../../db/settings'
+import { getSetting, useSetting } from '../../db/settings'
 import { nextTitle } from '../../lib/calendar/parse'
 import { ACTUAL_MIN, confirmConflict, discard, enqueue, type ViewEvent } from '../../lib/calendar/queue'
 import { Icon } from '../../lib/Icon'
 import { plannedMinutes } from './today'
+import { whenText } from './when'
 
-export type MarkTarget = { kind: 'new'; ev: ViewEvent; action: QueueAction } | { kind: 'conflict'; op: QueueOp }
+type MarkAction = Extract<QueueAction, 'done' | 'skip' | 'undo'>
+export type MarkTarget = { kind: 'new'; ev: ViewEvent; action: MarkAction } | { kind: 'conflict'; op: QueueOp }
 
-const TITLE: Record<QueueAction, string> = { done: 'Segna come fatta', skip: 'Segna come saltata', undo: 'Annulla il segno' }
+const TITLE: Record<MarkAction, string> = { done: 'Segna come fatta', skip: 'Segna come saltata', undo: 'Annulla il segno' }
 
 /** Anteprima del nuovo titolo e conferma: scrive solo nella coda, mai direttamente su Calendar. */
 export function MarkDialog({ target, onClose, onDone }: { target: MarkTarget; onClose: () => void; onDone: () => void }) {
   const [min, setMin] = useState(() =>
     target.kind === 'new' ? String(Math.min(ACTUAL_MIN.max, Math.max(ACTUAL_MIN.min, plannedMinutes(target.ev)))) : '')
+  const tz = useSetting('timeZone')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const askMin = target.kind === 'new' && target.action === 'done'
@@ -56,7 +59,13 @@ export function MarkDialog({ target, onClose, onDone }: { target: MarkTarget; on
           <dd>{from}</dd>
           <dt>Dopo</dt>
           <dd>{to}</dd>
+          {target.kind === 'conflict' && target.op.toStart !== undefined && target.op.toEnd !== undefined && (
+            <><dt>Nuovo orario</dt><dd>{whenText(target.op.toStart, target.op.toEnd, false, tz, true)}</dd></>
+          )}
         </dl>
+        {target.kind === 'conflict' && target.op.action === 'partial' && (
+          <p className="ui-muted">Parziale: {target.op.percent}%, {target.op.actualMin} min</p>
+        )}
         {askMin && (
           <label className="ui-stack">
             Minuti studiati davvero

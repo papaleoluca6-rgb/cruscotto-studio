@@ -56,8 +56,9 @@ describe('groupSessions', () => {
 
 describe('actionsFor', () => {
   it.each([
-    ['DSP Study: A', undefined, ['done', 'skip']],
-    ['↻ DSP Study: A', undefined, ['done', 'skip']],
+    // Riga 05: Parziale e Non fatto tra Fatto e Salta.
+    ['DSP Study: A', undefined, ['done', 'partial', 'notDone', 'skip']],
+    ['↻ DSP Study: A', undefined, ['done', 'partial', 'notDone', 'skip']],
     ['✅ DSP Study: A', undefined, ['undo']],
     ['✗ DSP Study: A', undefined, ['undo']],
     ['◐ DSP Study: A', undefined, ['undo']],
